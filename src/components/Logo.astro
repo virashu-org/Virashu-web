@@ -1,0 +1,49 @@
+---
+import { Image } from "astro:assets";
+import badge from "../assets/virashu-badge.png";
+import emblem from "../assets/virashu-emblem.png";
+import emblemGold from "../assets/virashu-emblem-gold.png";
+import lockup from "../assets/virashu-lockup.png";
+
+/**
+ * The brand assets, each derived in tools/derive-brand-assets.mjs.
+ *
+ *   emblem       navy line art, backgrounds keyed out. Light surfaces only.
+ *   emblem-gold  the same artwork with navy remapped to brand gold, matching how
+ *                the badge draws it. The variant to use on navy surfaces.
+ *   badge        the circular badge, masked to a circle. Legible from ~90px up;
+ *                below that its inner lettering turns to mush, so prefer the
+ *                emblem at small sizes.
+ *   lockup       the full stacked lockup. Light surfaces only.
+ */
+interface Props {
+  variant?: "emblem" | "emblem-gold" | "badge" | "lockup";
+  /** Rendered height in px. Width follows the asset's own aspect ratio. */
+  height?: number;
+  class?: string;
+  /** Empty by default: the name is always set as text beside the mark. */
+  alt?: string;
+}
+
+const { variant = "emblem", height = 32, class: className = "", alt = "" } = Astro.props;
+
+const assets = {
+  emblem: { src: emblem, w: 515, h: 316 },
+  "emblem-gold": { src: emblemGold, w: 515, h: 316 },
+  lockup: { src: lockup, w: 531, h: 521 },
+  badge: { src: badge, w: 1024, h: 1024 },
+} as const;
+
+const asset = assets[variant];
+const width = Math.round((asset.w / asset.h) * height);
+---
+
+<Image
+  src={asset.src}
+  alt={alt}
+  width={width}
+  height={height}
+  densities={[1, 2]}
+  class={className}
+  loading="eager"
+/>

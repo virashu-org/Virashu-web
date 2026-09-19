@@ -1,0 +1,159 @@
+---
+import { sampleBids } from "../data/site";
+
+// Data is handed to the script as JSON so no values are duplicated in the markup.
+const payload = sampleBids.map((b) => ({ ...b }));
+
+const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+---
+
+<div
+  class="border border-navy-700/60 bg-navy-950"
+  style="border-radius: var(--radius-xs)"
+  data-bid-demo
+>
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-navy-800 px-5 py-4">
+    <div class="flex items-center gap-3">
+      <span class="relative flex h-2 w-2" aria-hidden="true">
+        <span class="absolute inline-flex h-full w-full animate-ping bg-gold-500 opacity-60"></span>
+        <span class="relative inline-flex h-2 w-2 bg-gold-500"></span>
+      </span>
+      <p class="eyebrow text-gold-400">Live quote feed</p>
+    </div>
+    <p class="eyebrow text-navy-500">Vendors cannot see each other</p>
+  </div>
+
+  <div class="border-b border-navy-800 px-5 py-4">
+    <dl class="grid gap-x-6 gap-y-2 text-[0.8125rem] sm:grid-cols-[auto_1fr]">
+      <dt class="text-navy-400">Reported</dt>
+      <dd class="text-navy-100">"screen blank hogaya, touch chal raha hai"</dd>
+      <dt class="text-navy-400">Resolved to</dt>
+      <dd class="font-mono text-navy-100">Display assembly replacement</dd>
+      <dt class="text-navy-400">Device</dt>
+      <dd class="text-navy-100">Redmi Note 12 Pro · 6.67" AMOLED</dd>
+    </dl>
+  </div>
+
+  <ol class="divide-y divide-navy-800/70" data-bid-list aria-live="polite" aria-relevant="additions">
+    <li class="px-5 py-5 text-[0.875rem] text-navy-400" data-bid-empty>
+      Waiting for the first quote. Vendors nearby have been notified on WhatsApp.
+    </li>
+  </ol>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 border-t border-navy-800 px-5 py-4">
+    <p class="text-[0.75rem] text-navy-500">
+      Illustrative figures. Live bidding runs on the Hikkari platform.
+    </p>
+    <button
+      type="button"
+      data-bid-replay
+      class="eyebrow inline-flex h-9 items-center border border-navy-600 px-3 text-navy-200 transition-colors duration-200 hover:border-gold-500 hover:text-gold-400"
+      style="border-radius: var(--radius-xs)"
+    >
+      Replay the auction
+    </button>
+  </div>
+</div>
+
+<script type="application/json" id="bid-data" set:html={JSON.stringify(payload)}></script>
+
+<script>
+  const list = document.querySelector<HTMLOListElement>("[data-bid-list]");
+  const dataEl = document.getElementById("bid-data");
+  const replay = document.querySelector<HTMLButtonElement>("[data-bid-replay]");
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  type Bid = {
+    vendor: string;
+    tier: string;
+    price: number;
+    warranty: number;
+    turnaround: string;
+    distance: string;
+  };
+
+  const bids: Bid[] = dataEl ? JSON.parse(dataEl.textContent ?? "[]") : [];
+  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+  const tierStyle = (tier: string) =>
+    tier === "ORIGINAL"
+      ? "border-gold-500/60 text-gold-300"
+      : tier === "OEM"
+        ? "border-green-500/50 text-green-300"
+        : "border-navy-500 text-navy-300";
+
+  let timer: number | undefined;
+
+  function bestPrice(showing: Bid[]) {
+    return showing.reduce((min, b) => Math.min(min, b.price), Infinity);
+  }
+
+  function row(bid: Bid, isBest: boolean) {
+    const li = document.createElement("li");
+    li.className = "rise px-5 py-5";
+    li.innerHTML = `
+      <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
+        <div class="flex items-center gap-3">
+          <span class="inline-block h-2 w-2 rotate-45 bg-navy-500" aria-hidden="true"></span>
+          <span class="font-medium text-navy-100">${bid.vendor}</span>
+          <span class="eyebrow border px-2 py-1 ${tierStyle(bid.tier)}" style="border-radius: var(--radius-xs)">${bid.tier}</span>
+        </div>
+        <div class="flex items-baseline gap-3">
+          ${isBest ? '<span class="eyebrow text-green-300">Lowest so far</span>' : ""}
+          <span class="font-mono text-xl ${isBest ? "text-green-300" : "text-navy-50"}">${inr(bid.price)}</span>
+        </div>
+      </div>
+      <dl class="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[0.8125rem] text-navy-400">
+        <div class="flex gap-1.5"><dt>Warranty</dt><dd class="text-navy-200">${bid.warranty} days</dd></div>
+        <div class="flex gap-1.5"><dt>Turnaround</dt><dd class="text-navy-200">${bid.turnaround}</dd></div>
+        <div class="flex gap-1.5"><dt>Distance</dt><dd class="text-navy-200">${bid.distance}</dd></div>
+      </dl>
+    `;
+    return li;
+  }
+
+  function render(showing: Bid[]) {
+    if (!list) return;
+    list.innerHTML = "";
+    if (showing.length === 0) {
+      const li = document.createElement("li");
+      li.className = "px-5 py-5 text-[0.875rem] text-navy-400";
+      li.textContent =
+        "Waiting for the first quote. Vendors nearby have been notified on WhatsApp.";
+      list.appendChild(li);
+      return;
+    }
+    const best = bestPrice(showing);
+    showing.forEach((bid, i) => {
+      const el = row(bid, bid.price === best && showing.length > 1);
+      el.style.setProperty("--i", String(i));
+      el.style.setProperty("--jitter", `${(i * 7) % 11}ms`);
+      list.appendChild(el);
+    });
+  }
+
+  function reset() {
+    window.clearInterval(timer);
+    const shown: Bid[] = [];
+    render(shown);
+
+    if (prefersReduced) {
+      render([...bids]);
+      return;
+    }
+
+    let i = 0;
+    timer = window.setInterval(() => {
+      if (i >= bids.length) {
+        window.clearInterval(timer);
+        return;
+      }
+      shown.push(bids[i]!);
+      i += 1;
+      render([...shown]);
+    }, 1100);
+  }
+
+  replay?.addEventListener("click", reset);
+  reset();
+</script>

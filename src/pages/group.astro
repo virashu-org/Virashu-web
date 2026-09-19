@@ -1,0 +1,124 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import ThreadList from "../components/ThreadList.astro";
+import { verticals, site, operatingBusinesses } from "../data/site";
+
+const operating = verticals.filter((v) => v.status === "operating");
+const chartered = verticals.filter((v) => v.status === "mandate");
+
+const groupFunctions = [
+  {
+    title: "Management oversight",
+    body: "Operating entities report into a single management layer, so strategy, hiring standards and reporting stay consistent as the group grows.",
+  },
+  {
+    title: "Capital and financing",
+    body: "The parent holds and allocates capital across entities, funds new ventures, and takes responsibility for group-level financing.",
+  },
+  {
+    title: "Shared services",
+    body: "Legal, accounting, compliance, IT and design run centrally and are provided to each entity rather than rebuilt inside every one.",
+  },
+  {
+    title: "Governance and control",
+    body: "Audit, statutory compliance and risk oversight sit with the parent, with directors accountable for each entity.",
+  },
+];
+---
+
+<BaseLayout
+  title="The group"
+  description="Virashu Private Limited holds and manages entities across seven chartered sectors, from software and engineering to environmental solutions, hospitality and commerce."
+>
+  <PageHeader
+    eyebrow="The group"
+    title={`${verticals.length} sectors chartered. ${operatingBusinesses.length} business trading today.`}
+    lede="A memorandum of association records what a company is permitted to do. It is a set of intentions rather than a record of activity, so every sector below states where it actually stands."
+  />
+
+  <section class="border-t border-navy-900/10 bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      <div class="grid gap-14 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
+        <div class="lg:sticky lg:top-28 lg:self-start">
+          <h2 class="text-h2 max-w-[18ch] text-ink">How to read this page</h2>
+          <p class="mt-5 text-[0.9375rem] leading-relaxed text-ink-2">
+            A filled gold diamond marks a sector with a business operating in it today. An outlined
+            marker marks a sector the company is chartered to pursue.
+          </p>
+
+          <dl class="mt-10 flex flex-col gap-6 border-t border-navy-900/12 pt-8">
+            <div class="flex items-center gap-3">
+              <span class="inline-block h-3 w-3 rotate-45 bg-gold-500" aria-hidden="true"></span>
+              <dt class="text-[0.9375rem] text-ink">
+                Operating now
+                <span class="ml-2 font-mono text-ink-3">{operating.length}</span>
+              </dt>
+            </div>
+            <div class="flex items-center gap-3">
+              <span
+                class="inline-block h-3 w-3 rotate-45 border border-ink-3"
+                aria-hidden="true"
+              ></span>
+              <dt class="text-[0.9375rem] text-ink">
+                Chartered, not yet trading
+                <span class="ml-2 font-mono text-ink-3">{chartered.length}</span>
+              </dt>
+            </div>
+          </dl>
+
+          <p class="mt-8 max-w-[46ch] text-[0.875rem] leading-relaxed text-ink-3">
+            Each sector cites the clause of the Memorandum it is drawn from, so the page can be read
+            against the incorporation documents.
+          </p>
+        </div>
+
+        <div>
+          <ThreadList />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="field-dark">
+    <div class="shell py-20 md:py-28">
+      <p class="eyebrow text-gold-400">What the parent actually does</p>
+      <h2 class="text-h2 mt-5 max-w-[26ch] text-navy-50">
+        A holding company adds value or it is just a letterhead.
+      </h2>
+
+      <div class="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+        {
+          groupFunctions.map((f, i) => (
+            <div class="border-t border-navy-800 pt-6">
+              <p class="eyebrow text-navy-500">{String(i + 1).padStart(2, "0")}</p>
+              <h3 class="mt-3 text-h3 text-navy-50">{f.title}</h3>
+              <p class="mt-3 max-w-[52ch] text-[0.9375rem] leading-relaxed text-navy-300">
+                {f.body}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-16 flex flex-wrap items-center gap-4 border-t border-navy-800 pt-10">
+        <a
+          href="/hikkari"
+          class="inline-flex h-12 items-center bg-gold-500 px-6 font-medium text-navy-950 transition-colors duration-200 hover:bg-gold-400"
+          style="border-radius: var(--radius-xs)"
+        >
+          See the operating business
+        </a>
+        <a
+          href="/contact"
+          class="inline-flex h-12 items-center border border-navy-600 px-6 font-medium text-navy-100 transition-colors duration-200 hover:border-gold-400 hover:text-gold-400"
+          style="border-radius: var(--radius-xs)"
+        >
+          Partnership enquiry
+        </a>
+      </div>
+
+      <p class="mt-12 text-[0.8125rem] text-navy-400">{site.legalName}</p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,124 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { site } from "../data/site";
+
+const { grievanceOfficer } = site.legal;
+---
+
+<LegalLayout
+  title="Grievance redressal"
+  eyebrow="Legal"
+  description="How to raise a complaint with Virashu Private Limited, including the named grievance officer, the acknowledgement and resolution timelines, and how to escalate to the Data Protection Board or a consumer forum."
+  lede="A named officer, a fixed timeline, and a route to escalate if we get it wrong."
+  lastUpdated="19 September 2026"
+>
+  <h2>Our commitment</h2>
+  <p>
+    Every complaint that reaches us is logged and answered. We acknowledge receipt within{" "}
+    <strong>{grievanceOfficer.acknowledgementWindow}</strong> and aim to resolve it within{" "}
+    <strong>{grievanceOfficer.resolutionWindow}</strong> of receipt. If a matter needs longer, we tell
+    you why and give you a date rather than leaving it open.
+  </p>
+
+  <h2>The grievance officer</h2>
+  <table>
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <td>{grievanceOfficer.name}</td>
+      </tr>
+      <tr>
+        <th>Designation</th>
+        <td>{grievanceOfficer.designation}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td><span class="font-mono text-[0.875rem]">{grievanceOfficer.email}</span></td>
+      </tr>
+      <tr>
+        <th>Postal address</th>
+        <td>{site.legal.registeredOffice}</td>
+      </tr>
+      <tr>
+        <th>Acknowledgement</th>
+        <td>Within {grievanceOfficer.acknowledgementWindow}</td>
+      </tr>
+      <tr>
+        <th>Resolution</th>
+        <td>Within {grievanceOfficer.resolutionWindow}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    These timelines follow the requirements for intermediaries under the Information Technology
+    (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, and the response
+    expectations under the Digital Personal Data Protection Act, 2023.
+  </p>
+
+  <h2>What you can raise</h2>
+  <ul>
+    <li>
+      <strong>Privacy and personal data.</strong> Access, correction, erasure, withdrawal of consent,
+      or a concern about how your data or photographs were handled.
+    </li>
+    <li>
+      <strong>Hikkari platform conduct.</strong> A vendor who did not honour a quote, warranty or
+      turnaround, or a vendor dispute about how the bidding treated them.
+    </li>
+    <li>
+      <strong>Content on our services.</strong> Anything unlawful, misleading, or infringing your
+      rights, including impersonation of you or your business.
+    </li>
+    <li>
+      <strong>Accessibility.</strong> Any part of our website or platform you cannot use, with the
+      device and assistive technology you were using.
+    </li>
+    <li>
+      <strong>Any other matter</strong> concerning {site.legalName} or a group entity.
+    </li>
+  </ul>
+
+  <h2>How to file</h2>
+  <p>
+    Email the grievance officer with the subject line "Grievance" and include what happened, roughly
+    when, which Hikkari request or account it concerns if applicable, and what outcome you are
+    seeking. Attach any screenshots or documents that support it.
+  </p>
+  <p>
+    If you would rather write in Hindi or another Indian language, do. We will respond in the language
+    you used.
+  </p>
+
+  <h2>What happens next</h2>
+  <ol>
+    <li>We acknowledge the complaint and give you a reference number.</li>
+    <li>We investigate, which may involve contacting the vendor or a group entity concerned.</li>
+    <li>We tell you the outcome and the reason for it, in writing.</li>
+    <li>
+      If we cannot resolve it within {grievanceOfficer.resolutionWindow}, we tell you where it stands
+      and when to expect the next update.
+    </li>
+  </ol>
+
+  <h2>If you are still not satisfied</h2>
+  <ul>
+    <li>
+      <strong>Privacy matters.</strong> You may complain to the Data Protection Board of India under
+      the Digital Personal Data Protection Act, 2023 after giving us the opportunity to resolve it.
+    </li>
+    <li>
+      <strong>Consumer matters.</strong> You may approach the appropriate Consumer Commission under
+      the Consumer Protection Act, 2019, or the National Consumer Helpline.
+    </li>
+    <li>
+      <strong>Cyber incidents.</strong> You may also report to the National Cyber Crime Reporting
+      Portal where a criminal offence is involved.
+    </li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>
+    General enquiries that are not complaints should go through the
+    <a href="/contact">contact page</a>, where choosing the right desk gets you a faster reply.
+  </p>
+</LegalLayout>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Add a Sitemap line here once @astrojs/sitemap is enabled and the
+# production domain is confirmed.

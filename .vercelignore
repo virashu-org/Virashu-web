@@ -1,0 +1,16 @@
+# Build output is produced on Vercel, never uploaded.
+dist/
+.astro/
+
+# Dependencies are installed on Vercel from package.json.
+node_modules/
+
+# Local-only material.
+tools/
+*.log
+.env
+.env.*
+.DS_Store
+
+# The source logo JPEGs live outside the project, but ignore any copies.
+brand-sheet.png

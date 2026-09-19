@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { site, hikkari } from "../data/site";
+
+/**
+ * No named vacancies are listed here on purpose. Inventing postings on a live
+ * careers page is worse than an empty one. These are the disciplines the group
+ * actually hires into; replace this block with real openings as they open.
+ */
+const disciplines = [
+  {
+    title: "Backend engineering",
+    stack: ["Java 21", "Spring Boot", "PostgreSQL", "PostGIS", "Redis"],
+    body: "Live bidding, WhatsApp integration, KYC pipelines and the spatial matching that decides which vendors see a request.",
+  },
+  {
+    title: "Applied AI and vision",
+    stack: ["ONNX", "Embeddings", "pgvector", "Vision models"],
+    body: "Making Hinglish symptom text resolve to the right repair category, and keeping customer photos private while doing it.",
+  },
+  {
+    title: "Mobile and web engineering",
+    stack: ["Android", "Web front end", "Design systems"],
+    body: "The customer surface, where a repair quote has to be readable in seconds on a mid-range phone.",
+  },
+  {
+    title: "Vendor operations",
+    stack: ["KYC", "Field onboarding", "Market ops"],
+    body: "Getting real repair shops verified and bidding, city by city. This work is on the ground, not on a dashboard.",
+  },
+  {
+    title: "Design",
+    stack: ["Interface", "Brand", "Motion"],
+    body: "Hikkari's product surface and the group's identity across every entity it launches.",
+  },
+  {
+    title: "Finance and compliance",
+    stack: ["Statutory compliance", "Company law", "Vendor payments"],
+    body: "Group-level accounting, compliance across entities, and the money movement behind vendor payouts.",
+  },
+];
+
+const principles = [
+  {
+    title: "We hire for the first version",
+    body: "Early teams here build and operate what they build. If you need a large team around you before you will ship, this is the wrong place.",
+  },
+  {
+    title: "Written over spoken",
+    body: "Decisions get written down. It is how three founders and several entities stay aligned without meetings all day.",
+  },
+  {
+    title: "Ground truth over dashboards",
+    body: "For anything customer-facing, the team spends time where the customer is, including the shops.",
+  },
+];
+---
+
+<BaseLayout
+  title="Careers"
+  description="Work at Virashu across engineering, applied AI, operations, design and finance. Open applications welcome for the disciplines the group builds in."
+>
+  <PageHeader
+    eyebrow="Careers"
+    title="We are early, and we hire like it."
+    lede="Virashu is building Hikkari into a live marketplace while the wider group is still taking shape. That means small teams, direct ownership, and work that reaches real customers quickly."
+  />
+
+  <section class="border-t border-navy-900/10 bg-paper">
+    <div class="shell py-20 md:py-28">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="eyebrow text-ink-3">Where we build</p>
+          <h2 class="text-h2 mt-5 max-w-[24ch] text-ink">Six disciplines, all of them active.</h2>
+        </div>
+        <p class="max-w-[48ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          There are no named vacancies published at this moment. These are the areas the group hires
+          into, and open applications are read.
+        </p>
+      </div>
+
+      <div class="mt-14 grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-2 lg:grid-cols-3">
+        {
+          disciplines.map((d) => (
+            <article class="flex flex-col bg-paper p-7">
+              <h3 class="font-medium text-ink">{d.title}</h3>
+              <p class="mt-3 flex-1 text-[0.9375rem] leading-relaxed text-ink-2">{d.body}</p>
+              <ul class="mt-5 flex flex-wrap gap-2">
+                {d.stack.map((s) => (
+                  <li
+                    class="border border-navy-900/12 px-2.5 py-1 font-mono text-[0.6875rem] text-ink-3"
+                    style="border-radius: var(--radius-xs)"
+                  >
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      <p class="eyebrow text-ink-3">How we work</p>
+      <h2 class="text-h2 mt-5 max-w-[24ch] text-ink">Three things we will not trade away.</h2>
+
+      <div class="mt-14 grid gap-x-12 gap-y-10 md:grid-cols-3">
+        {
+          principles.map((p, i) => (
+            <div class="border-t border-navy-900/12 pt-6">
+              <p class="eyebrow text-gold-700">{String(i + 1).padStart(2, "0")}</p>
+              <h3 class="mt-3 text-h3 text-ink">{p.title}</h3>
+              <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{p.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="field-dark">
+    <div class="shell py-20 md:py-24">
+      <div class="flex flex-wrap items-center justify-between gap-10">
+        <div>
+          <h2 class="text-h2 max-w-[24ch] text-navy-50">Send an open application.</h2>
+          <p class="mt-4 max-w-[52ch] leading-relaxed text-navy-300">
+            Tell us what you would own at {hikkari.name} and what you have shipped before. Specific
+            beats comprehensive.
+          </p>
+          <p class="mt-6 font-mono text-[0.875rem] text-gold-400">{site.legal.email}</p>
+        </div>
+        <a
+          href="/contact"
+          class="inline-flex h-12 items-center bg-gold-500 px-6 font-medium text-navy-950 transition-colors duration-200 hover:bg-gold-400"
+          style="border-radius: var(--radius-xs)"
+        >
+          Apply through the contact form
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

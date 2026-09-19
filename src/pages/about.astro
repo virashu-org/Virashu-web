@@ -1,0 +1,145 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Logo from "../components/Logo.astro";
+import { site, markMeanings } from "../data/site";
+---
+
+<BaseLayout
+  title="About"
+  description="Virashu is named after its three founders. Its corporate mark encodes vastness, precious value, auspicious growth and unified leadership."
+>
+  <PageHeader
+    eyebrow="About"
+    title="The name is the organisation chart."
+    lede="Virashu is assembled from the first syllables of the three people who founded it. That is also how the mark is drawn, and how authority is meant to work: three people acting as one company rather than three interests sharing a letterhead."
+  />
+
+  <section class="border-t border-navy-900/10 bg-paper">
+    <div class="shell py-20 md:py-28">
+      <div class="grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-3">
+        {
+          site.founders.map((f) => (
+            <div class="bg-paper p-8">
+              <p class="font-mono text-5xl font-medium tracking-tight text-gold-700">
+                {f.derivation}
+              </p>
+              <p class="mt-6 text-h3 text-ink">{f.name}</p>
+              <p class="eyebrow mt-2 text-ink-3">{f.role}</p>
+              <p class="mt-4 text-[0.9375rem] leading-relaxed text-ink-2">{f.meaning}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="mt-6 max-w-[68ch] text-[0.8125rem] leading-relaxed text-ink-3">
+        Founder designations are held as placeholders pending confirmation, along with the statutory
+        details shown in the footer.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      <div class="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div>
+          <div class="flex flex-col gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12">
+            <div class="bg-paper p-8">
+              <Logo variant="lockup" height={215} class="mx-auto" />
+              <p class="mt-7 text-[0.8125rem] leading-relaxed text-ink-3">
+                <span class="font-medium text-ink-2">Primary signature.</span> A navy V and S interlock
+                to close the base, a faceted diamond sits at the focal centre, and three gold and green
+                leaf forms rise into a crown.
+              </p>
+            </div>
+
+            <div class="field-dark p-8">
+              <Logo variant="badge" height={200} class="mx-auto" />
+              <p class="mt-7 text-[0.8125rem] leading-relaxed text-navy-300">
+                <span class="font-medium text-navy-100">Circular badge.</span> A ceremonial stamp for
+                avatars, certificates and print. Its inner lettering needs roughly 250px of width to
+                stay readable, so on the web the emblem above is used anywhere smaller.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow text-ink-3">The mark</p>
+          <h2 class="text-h2 mt-5 max-w-[24ch] text-ink">
+            Four ideas, one device, no room for a fifth.
+          </h2>
+
+          <div class="mt-12 flex flex-col">
+            {
+              markMeanings.map((m, i) => (
+                <div class="flex gap-6 border-t border-navy-900/12 py-7 first:border-t-0 first:pt-0">
+                  <span class="eyebrow mt-1.5 shrink-0 text-gold-700">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 class="text-h3 text-ink">{m.title}</h3>
+                    <p class="eyebrow mt-1.5 text-ink-3">{m.sanskrit}</p>
+                    <p class="mt-3 max-w-[56ch] text-[0.9375rem] leading-relaxed text-ink-2">
+                      {m.body}
+                    </p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="field-dark">
+    <div class="shell py-20 md:py-28">
+      <p class="eyebrow text-gold-400">How the group is run</p>
+      <h2 class="text-h2 mt-5 max-w-[26ch] text-navy-50">
+        Entities operate. The parent holds the standards.
+      </h2>
+
+      <div class="mt-14 grid gap-px overflow-hidden border border-navy-800 bg-navy-800 md:grid-cols-3">
+        <div class="bg-navy-950 p-7">
+          <h3 class="font-medium text-navy-50">Operating entities</h3>
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-navy-300">
+            Each business runs with its own team, its own customers and its own P&amp;L, close enough
+            to the customer to move on its own.
+          </p>
+        </div>
+        <div class="bg-navy-950 p-7">
+          <h3 class="font-medium text-navy-50">Central functions</h3>
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-navy-300">
+            Legal, finance, compliance, technology and design are shared, so a new venture starts with
+            infrastructure rather than a blank page.
+          </p>
+        </div>
+        <div class="bg-navy-950 p-7">
+          <h3 class="font-medium text-navy-50">Board oversight</h3>
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-navy-300">
+            The parent's directors are accountable for statutory compliance and risk across every
+            entity in the group.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-14 flex flex-wrap items-center gap-4 border-t border-navy-800 pt-10">
+        <a
+          href="/group"
+          class="inline-flex h-12 items-center bg-gold-500 px-6 font-medium text-navy-950 transition-colors duration-200 hover:bg-gold-400"
+          style="border-radius: var(--radius-xs)"
+        >
+          The group and its sectors
+        </a>
+        <a
+          href="/careers"
+          class="inline-flex h-12 items-center border border-navy-600 px-6 font-medium text-navy-100 transition-colors duration-200 hover:border-gold-400 hover:text-gold-400"
+          style="border-radius: var(--radius-xs)"
+        >
+          Work with us
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,24 @@
+{
+  "name": "virashu-web",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "assets": "node tools/derive-brand-assets.mjs",
+    "assets:verify": "node tools/verify-assets.mjs && node tools/check-colours.mjs",
+    "assets:sheet": "node tools/preview-assets.mjs",
+    "palette": "node tools/brand-palette.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/playfair-display": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

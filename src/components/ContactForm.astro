@@ -1,0 +1,220 @@
+---
+import { site } from "../data/site";
+/**
+ * Form endpoint.
+ *
+ * Leave empty and the form composes an email in the visitor's mail client, which
+ * works with no backend at all. Set it to a URL (Formspree, Netlify Forms, or
+ * your own API) and submissions POST there as JSON instead.
+ */
+const ENDPOINT = "";
+
+const topics = [
+  "Group or partnership enquiry",
+  "Hikkari: register a repair shop",
+  "Hikkari: customer support",
+  "Careers",
+  "Media",
+  "Grievance",
+];
+---
+
+<form
+  class="grid gap-6"
+  data-contact-form
+  data-endpoint={ENDPOINT}
+  data-fallback-email={site.legal.email}
+  novalidate
+>
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label for="cf-name" class="text-[0.875rem] font-medium text-ink">Your name</label>
+      <input
+        id="cf-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        required
+        aria-describedby="cf-name-error"
+        class="h-12 border border-navy-900/20 bg-paper px-3.5 text-ink outline-none focus-visible:border-gold-600"
+        style="border-radius: var(--radius-xs)"
+      />
+      <p id="cf-name-error" class="hidden text-[0.8125rem] text-gold-700" data-error></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="cf-email" class="text-[0.875rem] font-medium text-ink">Email</label>
+      <input
+        id="cf-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        aria-describedby="cf-email-error"
+        class="h-12 border border-navy-900/20 bg-paper px-3.5 text-ink outline-none focus-visible:border-gold-600"
+        style="border-radius: var(--radius-xs)"
+      />
+      <p id="cf-email-error" class="hidden text-[0.8125rem] text-gold-700" data-error></p>
+    </div>
+  </div>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label for="cf-org" class="text-[0.875rem] font-medium text-ink">
+        Organisation <span class="font-normal text-ink-3">(optional)</span>
+      </label>
+      <input
+        id="cf-org"
+        name="organisation"
+        type="text"
+        autocomplete="organization"
+        class="h-12 border border-navy-900/20 bg-paper px-3.5 text-ink outline-none focus-visible:border-gold-600"
+        style="border-radius: var(--radius-xs)"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="cf-topic" class="text-[0.875rem] font-medium text-ink">What is this about</label>
+      <select
+        id="cf-topic"
+        name="topic"
+        class="h-12 border border-navy-900/20 bg-paper px-3.5 text-ink outline-none focus-visible:border-gold-600"
+        style="border-radius: var(--radius-xs)"
+      >
+        {topics.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="cf-message" class="text-[0.875rem] font-medium text-ink">Message</label>
+    <textarea
+      id="cf-message"
+      name="message"
+      rows="6"
+      required
+      aria-describedby="cf-message-error"
+      class="border border-navy-900/20 bg-paper p-3.5 text-ink outline-none focus-visible:border-gold-600"
+      style="border-radius: var(--radius-xs)"></textarea>
+    <p id="cf-message-error" class="hidden text-[0.8125rem] text-gold-700" data-error></p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-5">
+    <button
+      type="submit"
+      class="inline-flex h-12 items-center bg-navy-950 px-6 font-medium text-navy-50 transition-colors duration-200 hover:bg-navy-800"
+      style="border-radius: var(--radius-xs)"
+    >
+      Send message
+    </button>
+    <p class="text-[0.8125rem] text-ink-3">We reply to enquiry emails during working hours.</p>
+  </div>
+
+  <p
+    class="hidden border px-4 py-3 text-[0.875rem]"
+    data-form-status
+    role="status"
+    aria-live="polite"
+    style="border-radius: var(--radius-xs)"
+  ></p>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+
+  if (form) {
+    const endpoint = form.dataset.endpoint ?? "";
+    const fallbackEmail = form.dataset.fallbackEmail ?? "";
+    const status = form.querySelector<HTMLParagraphElement>("[data-form-status]");
+
+    function showStatus(message: string, ok: boolean) {
+      if (!status) return;
+      status.textContent = message;
+      // Keep `border` in both branches: assigning className replaces the class
+      // list wholesale, so a border-colour utility alone would render no border.
+      status.className = ok
+        ? "border border-green-700/40 bg-green-100/50 px-4 py-3 text-[0.875rem] text-ink"
+        : "border border-gold-700/50 bg-gold-100/60 px-4 py-3 text-[0.875rem] text-ink";
+      status.style.borderRadius = "var(--radius-xs)";
+    }
+
+    function setError(field: HTMLInputElement | HTMLTextAreaElement, message: string) {
+      const el = form!.querySelector<HTMLParagraphElement>(`#${field.id}-error`);
+      field.setAttribute("aria-invalid", message ? "true" : "false");
+      if (el) {
+        el.textContent = message;
+        el.classList.toggle("hidden", !message);
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const fields = Array.from(
+        form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea"),
+      ).filter((f) => f.required);
+
+      let firstInvalid: HTMLElement | null = null;
+
+      for (const field of fields) {
+        const value = field.value.trim();
+        let message = "";
+
+        if (!value) {
+          message = "This field is needed so we can reply.";
+        } else if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          message = "Check the email address. It looks incomplete.";
+        }
+
+        setError(field, message);
+        if (message && !firstInvalid) firstInvalid = field;
+      }
+
+      if (firstInvalid) {
+        showStatus("Some fields need attention before this can be sent.", false);
+        firstInvalid.focus();
+        return;
+      }
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      if (endpoint) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) throw new Error(String(response.status));
+
+          form.reset();
+          showStatus("Sent. We will reply to your email address.", true);
+        } catch {
+          showStatus(
+            `That did not send. Please email us directly at ${fallbackEmail}.`,
+            false,
+          );
+        }
+        return;
+      }
+
+      // No endpoint configured: hand off to the visitor's mail client.
+      const subject = encodeURIComponent(String(data.topic ?? "Website enquiry"));
+      const body = encodeURIComponent(
+        `Name: ${data.name}\nEmail: ${data.email}\nOrganisation: ${data.organisation || "-"}\n\n${data.message}`,
+      );
+      window.location.href = `mailto:${fallbackEmail}?subject=${subject}&body=${body}`;
+      showStatus("Opening your email app with this message ready to send.", true);
+    });
+
+    // Clear a field's error as soon as the visitor corrects it.
+    for (const field of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      "input, textarea",
+    )) {
+      field.addEventListener("input", () => {
+        if (field.getAttribute("aria-invalid") === "true") setError(field, "");
+      });
+    }
+  }
+</script>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  tone?: "dark" | "light";
+  width?: string;
+}
+
+const { eyebrow, title, lede, tone = "dark", width = "24ch" } = Astro.props;
+---
+
+<div class={tone === "light" ? "field-dark" : "bg-paper"}>
+  <div class="shell py-16 md:py-24">
+    <p class:list={["eyebrow", tone === "light" ? "text-gold-400" : "text-ink-3"]}>{eyebrow}</p>
+    <h1
+      class:list={["text-h1 mt-6", tone === "light" ? "text-navy-50" : "text-ink"]}
+      style={`max-width: ${width}`}
+    >
+      {title}
+    </h1>
+    {
+      lede && (
+        <p
+          class:list={[
+            "text-lede mt-6 max-w-[62ch] leading-relaxed",
+            tone === "light" ? "text-navy-200" : "text-ink-2",
+          ]}
+        >
+          {lede}
+        </p>
+      )
+    }
+  </div>
+</div>

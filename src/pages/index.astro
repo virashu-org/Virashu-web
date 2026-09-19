@@ -1,0 +1,258 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Logo from "../components/Logo.astro";
+import ThreadList from "../components/ThreadList.astro";
+import StatusBadge from "../components/StatusBadge.astro";
+import { site, markMeanings, verticals, hikkari, operatingBusinesses } from "../data/site";
+
+const operating = verticals.filter((v) => v.status === "operating");
+const chartered = verticals.filter((v) => v.status === "mandate");
+---
+
+<BaseLayout
+  title={site.brandName}
+  description="Virashu Private Limited is a parent holding company that operates its own businesses across software, engineering, environment, hospitality and commerce."
+>
+  <!-- Hero: asymmetric, left-weighted. The right column carries a real artifact
+       (the group's actual structure) instead of an illustration. -->
+  <section class="field-dark relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute -top-40 -right-20 h-[34rem] w-[34rem] rounded-full bg-gold-500/6 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="shell relative py-20 md:py-28 lg:py-32">
+      <div class="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+        <div>
+          <p class="eyebrow text-gold-400">{site.legalName} · India</p>
+
+          <h1 class="text-h1 mt-6 max-w-[19ch] text-navy-50">
+            A parent company that runs what it owns.
+          </h1>
+
+          <p class="text-lede mt-6 max-w-[54ch] leading-relaxed text-navy-200">
+            Virashu holds and manages businesses across software, engineering, environment,
+            hospitality and commerce. The first of them is trading today.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              href="/group"
+              class="inline-flex h-12 items-center bg-gold-500 px-6 font-medium text-navy-950 transition-colors duration-200 hover:bg-gold-400"
+              style="border-radius: var(--radius-xs)"
+            >
+              See the group
+            </a>
+            <a
+              href="/hikkari"
+              class="inline-flex h-12 items-center border border-navy-300/30 px-6 font-medium text-navy-100 transition-colors duration-200 hover:border-gold-400 hover:text-gold-400"
+              style="border-radius: var(--radius-xs)"
+            >
+              Explore Hikkari
+            </a>
+          </div>
+
+          <!-- The corporate tagline, set the way the badge sets it. -->
+          <p class="mt-12 font-serif text-[1.0625rem] italic text-gold-400">{site.tagline}</p>
+        </div>
+
+        <div class="lg:pt-4">
+          <div class="border border-navy-700/60 bg-navy-900/40 p-6" style="border-radius: var(--radius-xs)">
+            <h2 class="eyebrow text-navy-400">Group structure</h2>
+
+            <div class="mt-6 flex items-center gap-3">
+              <Logo variant="emblem-gold" height={30} />
+              <div>
+                <p class="font-medium text-navy-50">Virashu</p>
+                <p class="text-[0.8125rem] text-navy-400">Parent holding company</p>
+              </div>
+            </div>
+
+            <div class="mt-5 border-l border-gold-500/40 pl-5">
+              <div class="flex items-center gap-3">
+                <span class="inline-block h-2 w-2 rotate-45 bg-gold-500" aria-hidden="true"></span>
+                <div>
+                  <p class="font-medium text-navy-100">{hikkari.name}</p>
+                  <p class="text-[0.8125rem] text-navy-400">{hikkari.category}</p>
+                </div>
+              </div>
+
+              <p class="eyebrow mt-5 text-navy-400">
+                Charter covers {chartered.length} further sectors
+              </p>
+              <ul class="mt-3 flex flex-col gap-2">
+                {
+                  chartered.map((v) => (
+                    <li class="flex items-center gap-2.5 text-[0.875rem] text-navy-300">
+                      <span
+                        class="inline-block h-1.5 w-1.5 border border-navy-500"
+                        aria-hidden="true"
+                      />
+                      {v.name}
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The name. The strongest thing this company owns is that its name is its
+       governance model, so it gets a section rather than a footnote. -->
+  <section class="border-b border-navy-900/10 bg-paper">
+    <div class="shell py-20 md:py-28">
+      <p class="eyebrow text-ink-3">The name</p>
+      <h2 class="text-h2 mt-5 max-w-[26ch] text-ink">
+        Vi, ra and shu. Three founders, held as one company.
+      </h2>
+      <p class="measure mt-5 leading-relaxed text-ink-2">
+        The corporate name is not a coined word. It is assembled from the first syllables of the
+        three people who founded the group, which is also how the mark is drawn.
+      </p>
+
+      <div class="mt-14 grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-3">
+        {
+          site.founders.map((f, i) => (
+            <div class="bg-paper p-7">
+              <p class="font-mono text-4xl font-medium tracking-tight text-gold-700">
+                {f.derivation}
+              </p>
+              <p class="mt-5 text-h3 text-ink">{f.name}</p>
+              <p class="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">{f.meaning}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-16 grid gap-x-12 gap-y-10 md:grid-cols-2">
+        {
+          markMeanings.map((m) => (
+            <div class="flex gap-5">
+              <span
+                class="mt-1.5 inline-block h-2.5 w-2.5 shrink-0 rotate-45 bg-gold-600"
+                aria-hidden="true"
+              />
+              <div>
+                <h3 class="text-h3 text-ink">{m.title}</h3>
+                <p class="eyebrow mt-1.5 text-ink-3">{m.sanskrit}</p>
+                <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{m.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- The group, threaded. -->
+  <section class="bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="eyebrow text-ink-3">The group</p>
+          <h2 class="text-h2 mt-5 max-w-[26ch] text-ink">
+            {verticals.length} sectors in the charter. One business trading in{" "}
+            {operating.length} of them.
+          </h2>
+        </div>
+        <p class="max-w-[46ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          A memorandum of association is a set of intentions, not a track record. Everything below is
+          labelled by where it actually stands.
+        </p>
+      </div>
+
+      <div class="mt-14">
+        <ThreadList />
+      </div>
+    </div>
+  </section>
+
+  <!-- Operating business spotlight. -->
+  <section class="field-dark">
+    <div class="shell py-20 md:py-28">
+      <div class="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+        <div>
+          <div class="flex flex-wrap items-center gap-4">
+            <p class="eyebrow text-gold-400">Operating business</p>
+            <StatusBadge status="operating" tone="light" />
+          </div>
+          <h2 class="text-h2 mt-6 text-navy-50">{hikkari.name}</h2>
+          <p class="text-lede mt-4 max-w-[46ch] text-gold-300">{hikkari.promise}</p>
+          <p class="measure mt-6 leading-relaxed text-navy-200">{hikkari.problem}</p>
+
+          <a
+            href="/hikkari"
+            class="mt-9 inline-flex h-12 items-center border border-gold-500/50 px-6 font-medium text-gold-400 transition-colors duration-200 hover:bg-gold-500/10"
+            style="border-radius: var(--radius-xs)"
+          >
+            How the bidding works
+          </a>
+        </div>
+
+        <div class="grid gap-px overflow-hidden border border-navy-700/60 bg-navy-700/40 sm:grid-cols-2">
+          {
+            hikkari.mechanic.map((step, i) => (
+              <div class="bg-navy-950 p-6">
+                <p class="eyebrow text-navy-500">Step {i + 1}</p>
+                <h3 class="mt-3 font-medium text-navy-50">{step.step}</h3>
+                <p class="mt-2 text-[0.875rem] leading-relaxed text-navy-300">{step.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-navy-900/10 bg-paper">
+    <div class="shell py-20 md:py-24">
+      <div class="flex flex-wrap items-center justify-between gap-10">
+        <div>
+          <h2 class="text-h2 max-w-[22ch] text-ink">Group enquiries, partnerships and hiring.</h2>
+          <p class="mt-4 max-w-[52ch] leading-relaxed text-ink-2">
+            For subsidiary matters, vendor onboarding at Hikkari, or anything statutory, start here.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <a
+            href="/contact"
+            class="inline-flex h-12 items-center bg-navy-950 px-6 font-medium text-navy-50 transition-colors duration-200 hover:bg-navy-800"
+            style="border-radius: var(--radius-xs)"
+          >
+            Contact the group
+          </a>
+          <a
+            href="/careers"
+            class="inline-flex h-12 items-center border border-navy-950/20 px-6 font-medium text-navy-950 transition-colors duration-200 hover:border-gold-600"
+            style="border-radius: var(--radius-xs)"
+          >
+            Careers
+          </a>
+        </div>
+      </div>
+
+      <dl class="mt-16 grid gap-8 border-t border-navy-900/10 pt-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <dt class="eyebrow text-ink-3">Sectors in the charter</dt>
+          <dd class="mt-2 font-mono text-3xl text-ink">{verticals.length}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow text-ink-3">Sectors trading today</dt>
+          <dd class="mt-2 font-mono text-3xl text-ink">{operating.length}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow text-ink-3">Operating businesses</dt>
+          <dd class="mt-2 font-mono text-3xl text-ink">{operatingBusinesses.length}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow text-ink-3">Founders</dt>
+          <dd class="mt-2 font-mono text-3xl text-ink">{site.founders.length}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+</BaseLayout>

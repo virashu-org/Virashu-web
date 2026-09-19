@@ -1,0 +1,176 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { site } from "../data/site";
+---
+
+<LegalLayout
+  title="Privacy policy"
+  eyebrow="Legal"
+  description="How Virashu Private Limited collects, uses, shares and retains personal data across this website and the Hikkari platform, including how photographs are handled before any cloud processing."
+  lede="What we collect, why we collect it, who sees it, and how to get it back."
+  lastUpdated="19 September 2026"
+>
+  <h2>Who is responsible for your data</h2>
+  <p>
+    {site.legalName} is the entity that decides how personal data is used on this website and across
+    the Hikkari platform. Where a group entity operates its own service, this policy applies to the
+    group's shared functions, and any additional terms specific to that service will be published
+    with it.
+  </p>
+
+  <h2>What we collect</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>What it includes</th>
+        <th>Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Repair requests</td>
+        <td>
+          Device model, symptoms you describe, repair category we resolve it to, and the quotes you
+          receive.
+        </td>
+        <td>To run the diagnosis and the blind auction, and to show you comparable offers.</td>
+      </tr>
+      <tr>
+        <td>Contact details</td>
+        <td>Phone number for OTP verification and for coordination once you accept a quote.</td>
+        <td>To verify you and to connect you with the vendor you select.</td>
+      </tr>
+      <tr>
+        <td>Photographs</td>
+        <td>Images you upload of the device, after the redaction steps described below.</td>
+        <td>To assess visible damage and recommend a repair category.</td>
+      </tr>
+      <tr>
+        <td>Approximate location</td>
+        <td>A location used to find vendors within a workable distance.</td>
+        <td>Matching you to nearby shops. The auction is hyper-local by design.</td>
+      </tr>
+      <tr>
+        <td>Vendor KYC</td>
+        <td>
+          Business name, GSTIN, bank account details for penny-drop verification, UPI identifier, and
+          identity documents.
+        </td>
+        <td>
+          To confirm a repair shop is a real registered business before it can receive leads, and to
+          meet our obligations as a marketplace.
+        </td>
+      </tr>
+      <tr>
+        <td>Messages</td>
+        <td>WhatsApp messages exchanged with us or, for vendors, with the bidding system.</td>
+        <td>To deliver notifications, bids and support.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Photographs and the vision pipeline</h2>
+  <p>
+    A photograph of a damaged phone is also a photograph of whatever was on its screen. We treat that
+    as a privacy problem, not as an implementation detail. Before any image is sent to an external
+    model, the following run on our side:
+  </p>
+  <ul>
+    <li>
+      <strong>Blur detection</strong>, so we can tell you to retake an unusable photo rather than
+      guess from it.
+    </li>
+    <li>
+      <strong>Local optical character recognition</strong>, to read on-screen text for context about
+      the fault.
+    </li>
+    <li>
+      <strong>Face redaction</strong>, so people reflected or shown in a photograph are removed before
+      the image leaves our infrastructure.
+    </li>
+  </ul>
+  <p>
+    Only the redacted image is used for defect detection. We do not use photographs of your device to
+    train models, and we do not use them for advertising.
+  </p>
+
+  <h2>Who can see your data</h2>
+  <p>
+    Vendors participating in your repair request see the device model, the standardised repair
+    category and the redacted photographs. They do not see your phone number until you accept their
+    quote, and they never see another vendor's pricing.
+  </p>
+  <p>We use external providers for defined functions:</p>
+  <ul>
+    <li>WhatsApp Cloud API, operated by Meta, for messaging and bid submission.</li>
+    <li>Cloud vision providers for defect assessment, receiving only redacted images.</li>
+    <li>A KYC provider for GSTIN verification, bank penny-drop and identity checks.</li>
+    <li>SMS gateway services for one-time passwords.</li>
+  </ul>
+  <p>
+    We do not sell personal data. We disclose it where the law requires, or where it is necessary to
+    establish or defend a legal claim.
+  </p>
+
+  <h2>How long we keep it</h2>
+  <p>
+    Retention periods are being finalised against our statutory obligations and are marked for
+    confirmation before launch:
+  </p>
+  <ul>
+    <li>Repair request and quote history: [to be added]</li>
+    <li>Vendor KYC records: [to be added], as required for marketplace compliance.</li>
+    <li>Uploaded photographs: retained only as long as needed for the repair assessment and any warranty claim.</li>
+    <li>Website server logs: [to be added].</li>
+  </ul>
+
+  <h2>Your rights</h2>
+  <p>
+    Under the Digital Personal Data Protection Act, 2023, you can ask for a summary of the personal
+    data we hold about you, request correction of anything inaccurate, request erasure where we no
+    longer have a lawful reason to keep it, withdraw consent you previously gave, nominate another
+    person to exercise your rights in the event of death or incapacity, and complain to us or to the
+    Data Protection Board of India.
+  </p>
+  <p>
+    Write to the grievance officer listed on our
+    <a href="/grievance">grievance redressal page</a> to exercise any of these. We respond within the
+    timeframes published there.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    This website and the Hikkari platform are not directed at children, and we do not knowingly
+    process the personal data of children. If you believe a child has provided us with personal data,
+    contact the grievance officer and we will delete it.
+  </p>
+
+  <h2>Security</h2>
+  <p>
+    Access to personal data is limited to people who need it for their role. Vendor bank details and
+    identity documents receive additional access restrictions. Webhook traffic from WhatsApp is
+    verified by signature before it is processed, and verification codes are single-use and expiring.
+    No system is perfectly secure, and if a breach affects you we will notify you and the Data
+    Protection Board as required by law.
+  </p>
+
+  <h2>Cookies and analytics</h2>
+  <p>
+    This website does not set advertising or tracking cookies. If analytics are introduced, this
+    section will be updated first and, where consent is required, it will be requested before any
+    non-essential cookie is set.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    When this policy changes materially, we will revise the date at the top of the page and, where
+    the change affects you significantly, tell you through the channel you normally hear from us on.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    For any privacy question, write to <span class="font-mono text-[0.875rem]">{site.legal.email}</span>
+    or use the <a href="/contact">contact page</a>.
+  </p>
+</LegalLayout>
