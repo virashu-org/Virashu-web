@@ -1,6 +1,10 @@
 # build output
 dist/
 .astro/
+.vercel/
+
+# sanity typegen intermediate
+schema.json
 
 # dependencies
 node_modules/

@@ -1,0 +1,298 @@
+---
+import { urlFor } from '../sanity/lib/image';
+import PortableText from './PortableText.astro';
+
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sections: any[];
+}
+
+const { sections } = Astro.props;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const img = (image: any, width: number, height: number) =>
+  image?.asset ? urlFor(image).width(width).height(height).fit('crop').auto('format').url() : null;
+---
+
+{
+  sections.map((block) => (
+    <>
+      {block._type === 'sectionHero' && (
+        <section class={block.tone === 'dark' ? 'field-dark' : 'bg-paper'}>
+          <div class="shell py-16 md:py-24">
+            <div
+              class:list={[
+                'grid items-center gap-12 lg:grid-cols-2',
+                block.align === 'center' && 'text-center',
+              ]}
+            >
+              <div>
+                {block.eyebrow && (
+                  <p class:list={['eyebrow', block.tone === 'dark' ? 'text-gold-400' : 'text-ink-3']}>
+                    {block.eyebrow}
+                  </p>
+                )}
+                <h2
+                  class:list={[
+                    'text-h2 mt-5',
+                    block.tone === 'dark' ? 'text-navy-50' : 'text-ink',
+                    block.align === 'center' && 'mx-auto',
+                  ]}
+                >
+                  {block.heading}
+                </h2>
+                {block.lede && (
+                  <p
+                    class:list={[
+                      'text-lede mt-5 max-w-[56ch] leading-relaxed',
+                      block.tone === 'dark' ? 'text-navy-200' : 'text-ink-2',
+                      block.align === 'center' && 'mx-auto',
+                    ]}
+                  >
+                    {block.lede}
+                  </p>
+                )}
+                {block.actions?.length > 0 && (
+                  <div
+                    class:list={[
+                      'mt-9 flex flex-wrap items-center gap-4',
+                      block.align === 'center' && 'justify-center',
+                    ]}
+                  >
+                    {block.actions.map((action: any) => (
+                      <a
+                        href={action.href}
+                        target={action.newTab ? '_blank' : undefined}
+                        rel={action.newTab ? 'noopener noreferrer' : undefined}
+                        class:list={[
+                          'inline-flex h-12 items-center px-6 font-medium transition-colors duration-200',
+                          action.variant === 'secondary'
+                            ? 'border border-navy-300/30 text-navy-100 hover:border-gold-400 hover:text-gold-400'
+                            : 'bg-gold-500 text-navy-950 hover:bg-gold-400',
+                        ]}
+                        style="border-radius: var(--radius-xs)"
+                      >
+                        {action.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {img(block.image, 960, 720) && (
+                <img
+                  src={img(block.image, 960, 720)!}
+                  alt={block.image?.alt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full"
+                  style="border-radius: var(--radius-xs)"
+                />
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionRichText' && (
+        <section class="bg-paper">
+          <div class="shell py-16 md:py-24">
+            {block.heading && <h2 class="text-h2 mb-8 max-w-[26ch] text-ink">{block.heading}</h2>}
+            {block.body?.length > 0 && <PortableText value={block.body} />}
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionFeatureGrid' && (
+        <section class="bg-paper-2">
+          <div class="shell py-16 md:py-24">
+            {block.eyebrow && <p class="eyebrow text-ink-3">{block.eyebrow}</p>}
+            {block.heading && <h2 class="text-h2 mt-5 max-w-[26ch] text-ink">{block.heading}</h2>}
+            <div
+              class:list={[
+                'mt-14 grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 sm:grid-cols-2',
+                block.columns === 2 ? 'lg:grid-cols-2' : block.columns === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+              ]}
+            >
+              {block.items?.map((item: any) => (
+                <article class="flex flex-col bg-paper p-7">
+                  <span class="inline-block h-2.5 w-2.5 rotate-45 bg-gold-600" aria-hidden="true" />
+                  <h3 class="mt-5 font-medium text-ink">{item.title}</h3>
+                  <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{item.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionLogoCloud' && (
+        <section class="bg-paper">
+          <div class="shell py-16 md:py-20">
+            {block.heading && <h2 class="eyebrow text-ink-3">{block.heading}</h2>}
+            <div class="mt-10 grid grid-cols-2 items-center gap-10 sm:grid-cols-3 lg:grid-cols-4">
+              {block.logos?.map((logo: any) => (
+                <img
+                  src={img(logo, 320, 160)!}
+                  alt={logo?.alt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                  class="mx-auto max-h-16 w-auto opacity-80"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionStats' && (
+        <section class="field-dark">
+          <div class="shell py-16 md:py-24">
+            {block.heading && <h2 class="text-h2 mb-12 max-w-[26ch] text-navy-50">{block.heading}</h2>}
+            <dl class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {block.stats?.map((stat: any) => (
+                <div class="border-t border-navy-800 pt-5">
+                  <dd class="font-mono text-4xl text-gold-400">{stat.value}</dd>
+                  <dt class="eyebrow mt-3 text-navy-400">{stat.label}</dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionTestimonial' && (
+        <section class="bg-paper-2">
+          <div class="shell py-16 md:py-24">
+            {block.heading && <h2 class="text-h2 mb-12 max-w-[26ch] text-ink">{block.heading}</h2>}
+            <div class="grid gap-10 md:grid-cols-2">
+              {block.items?.map((item: any) => (
+                <figure class="border-l-2 border-gold-500 pl-6">
+                  <blockquote class="text-[1.0625rem] leading-relaxed text-ink">
+                    {item.quote}
+                  </blockquote>
+                  {(item.author || item.role) && (
+                    <figcaption class="mt-4 text-[0.875rem] text-ink-3">
+                      {item.author}
+                      {item.author && item.role ? ' · ' : ''}
+                      {item.role}
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionCta' && (
+        <section class={block.tone === 'light' ? 'bg-paper' : 'field-dark'}>
+          <div class="shell py-16 md:py-20">
+            <div class="flex flex-wrap items-center justify-between gap-10">
+              <div>
+                <h2
+                  class:list={['text-h2 max-w-[24ch]', block.tone === 'light' ? 'text-ink' : 'text-navy-50']}
+                >
+                  {block.heading}
+                </h2>
+                {block.body && (
+                  <p
+                    class:list={[
+                      'mt-4 max-w-[52ch] leading-relaxed',
+                      block.tone === 'light' ? 'text-ink-2' : 'text-navy-300',
+                    ]}
+                  >
+                    {block.body}
+                  </p>
+                )}
+              </div>
+              {block.actions?.length > 0 && (
+                <div class="flex flex-wrap items-center gap-4">
+                  {block.actions.map((action: any) => (
+                    <a
+                      href={action.href}
+                      target={action.newTab ? '_blank' : undefined}
+                      rel={action.newTab ? 'noopener noreferrer' : undefined}
+                      class:list={[
+                        'inline-flex h-12 items-center px-6 font-medium transition-colors duration-200',
+                        action.variant === 'secondary'
+                          ? 'border border-navy-600 text-navy-100 hover:border-gold-400 hover:text-gold-400'
+                          : 'bg-gold-500 text-navy-950 hover:bg-gold-400',
+                      ]}
+                      style="border-radius: var(--radius-xs)"
+                    >
+                      {action.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionFaq' && (
+        <section class="bg-paper">
+          <div class="shell py-16 md:py-24">
+            {block.heading && <h2 class="text-h2 mb-10 max-w-[26ch] text-ink">{block.heading}</h2>}
+            <div class="max-w-[70ch] divide-y divide-navy-900/12 border-t border-navy-900/12">
+              {block.items?.map((item: any) => (
+                <details class="group py-5">
+                  <summary class="flex cursor-pointer items-center justify-between gap-6 font-medium text-ink">
+                    {item.question}
+                    <span class="text-gold-700 transition-transform duration-200 group-open:rotate-45" aria-hidden="true">
+                      +
+                    </span>
+                  </summary>
+                  <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionGallery' && (
+        <section class="bg-paper-2">
+          <div class="shell py-16 md:py-24">
+            {block.heading && <h2 class="text-h2 mb-10 max-w-[26ch] text-ink">{block.heading}</h2>}
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {block.images?.map((image: any) => (
+                <img
+                  src={img(image, 800, 600)!}
+                  alt={image?.alt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full"
+                  style="border-radius: var(--radius-xs)"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {block._type === 'sectionEmbed' && (
+        <section class="bg-paper">
+          <div class="shell py-16 md:py-20">
+            {block.heading && <h2 class="text-h2 mb-8 max-w-[26ch] text-ink">{block.heading}</h2>}
+            <div class="mx-auto max-w-[80ch]">
+              <div
+                class="overflow-hidden border border-navy-900/12"
+                style={`border-radius: var(--radius-xs); aspect-ratio: ${(block.aspect ?? '16/9').replace('/', ' / ')};`}
+              >
+                <iframe
+                  src={block.url}
+                  title={block.heading ?? 'Embedded content'}
+                  loading="lazy"
+                  class="h-full w-full"
+                  allowfullscreen
+                />
+              </div>
+              {block.caption && <p class="mt-3 text-[0.8125rem] text-ink-3">{block.caption}</p>}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  ))
+}

@@ -1,16 +1,37 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Logo from "../components/Logo.astro";
-import ThreadList from "../components/ThreadList.astro";
-import StatusBadge from "../components/StatusBadge.astro";
-import { site, markMeanings, verticals, hikkari, operatingBusinesses } from "../data/site";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+import ThreadList from '../components/ThreadList.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import { site, hikkari as fallbackH } from '../data/site';
+import { getSiteSettings } from '../sanity/lib/site';
+import { getVerticals, getProducts, getProduct } from '../sanity/lib/content';
 
-const operating = verticals.filter((v) => v.status === "operating");
-const chartered = verticals.filter((v) => v.status === "mandate");
+const settings = await getSiteSettings(Astro.cookies);
+const verticals = await getVerticals(Astro.cookies);
+const products = await getProducts(Astro.cookies);
+const productDoc = await getProduct(Astro.cookies, 'hikkari');
+
+const hikkari = {
+  name: productDoc?.name ?? fallbackH.name,
+  category: productDoc?.category ?? fallbackH.category,
+  promise: productDoc?.promise ?? fallbackH.promise,
+  problem: productDoc?.problem ?? fallbackH.problem,
+  mechanic: productDoc?.mechanic?.length
+    ? productDoc.mechanic.map((m) => ({ step: m.step ?? '', body: m.body ?? '' }))
+    : fallbackH.mechanic.map((m) => ({ ...m })),
+};
+
+const operating = verticals.filter((v) => v.status === 'operating');
+const chartered = verticals.filter((v) => v.status === 'mandate');
+const operatingBusinesses = products.filter((p) => p.status === 'operating');
+const operatingBusinessCount = operatingBusinesses.length || 1;
+const { founders, markMeanings } = settings;
 ---
 
 <BaseLayout
-  title={site.brandName}
+  settings={settings}
+  title={settings.brandName}
   description="Virashu Private Limited is a parent holding company that operates its own businesses across software, engineering, environment, hospitality and commerce."
 >
   <!-- Hero: asymmetric, left-weighted. The right column carries a real artifact
@@ -25,7 +46,7 @@ const chartered = verticals.filter((v) => v.status === "mandate");
     <div class="shell relative py-20 md:py-28 lg:py-32">
       <div class="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
         <div>
-          <p class="eyebrow text-gold-400">{site.legalName} · India</p>
+          <p class="eyebrow text-gold-400">{settings.legalName} · India</p>
 
           <h1 class="text-h1 mt-6 max-w-[19ch] text-navy-50">
             A parent company that runs what it owns.
@@ -54,7 +75,7 @@ const chartered = verticals.filter((v) => v.status === "mandate");
           </div>
 
           <!-- The corporate tagline, set the way the badge sets it. -->
-          <p class="mt-12 font-serif text-[1.0625rem] italic text-gold-400">{site.tagline}</p>
+          <p class="mt-12 font-serif text-[1.0625rem] italic text-gold-400">{settings.tagline}</p>
         </div>
 
         <div class="lg:pt-4">
@@ -85,10 +106,7 @@ const chartered = verticals.filter((v) => v.status === "mandate");
                 {
                   chartered.map((v) => (
                     <li class="flex items-center gap-2.5 text-[0.875rem] text-navy-300">
-                      <span
-                        class="inline-block h-1.5 w-1.5 border border-navy-500"
-                        aria-hidden="true"
-                      />
+                      <span class="inline-block h-1.5 w-1.5 border border-navy-500" aria-hidden="true" />
                       {v.name}
                     </li>
                   ))
@@ -116,7 +134,7 @@ const chartered = verticals.filter((v) => v.status === "mandate");
 
       <div class="mt-14 grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-3">
         {
-          site.founders.map((f, i) => (
+          founders.map((f) => (
             <div class="bg-paper p-7">
               <p class="font-mono text-4xl font-medium tracking-tight text-gold-700">
                 {f.derivation}
@@ -155,8 +173,8 @@ const chartered = verticals.filter((v) => v.status === "mandate");
         <div>
           <p class="eyebrow text-ink-3">The group</p>
           <h2 class="text-h2 mt-5 max-w-[26ch] text-ink">
-            {verticals.length} sectors in the charter. One business trading in{" "}
-            {operating.length} of them.
+            {verticals.length} sectors in the charter. One business trading in {operating.length} of
+            them.
           </h2>
         </div>
         <p class="max-w-[46ch] text-[0.9375rem] leading-relaxed text-ink-2">
@@ -166,7 +184,7 @@ const chartered = verticals.filter((v) => v.status === "mandate");
       </div>
 
       <div class="mt-14">
-        <ThreadList />
+        <ThreadList verticals={verticals} />
       </div>
     </div>
   </section>
@@ -246,11 +264,11 @@ const chartered = verticals.filter((v) => v.status === "mandate");
         </div>
         <div>
           <dt class="eyebrow text-ink-3">Operating businesses</dt>
-          <dd class="mt-2 font-mono text-3xl text-ink">{operatingBusinesses.length}</dd>
+          <dd class="mt-2 font-mono text-3xl text-ink">{operatingBusinessCount}</dd>
         </div>
         <div>
           <dt class="eyebrow text-ink-3">Founders</dt>
-          <dd class="mt-2 font-mono text-3xl text-ink">{site.founders.length}</dd>
+          <dd class="mt-2 font-mono text-3xl text-ink">{founders.length}</dd>
         </div>
       </dl>
     </div>

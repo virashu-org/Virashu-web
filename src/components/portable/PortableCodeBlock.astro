@@ -1,0 +1,16 @@
+---
+interface Props {
+  node: { language?: string; code?: string };
+}
+
+const { node } = Astro.props;
+---
+
+<figure class="my-8 overflow-hidden border border-navy-800 bg-navy-950" style="border-radius: var(--radius-xs)">
+  {node?.language && (
+    <figcaption class="border-b border-navy-800 px-4 py-2 font-mono text-[0.6875rem] tracking-wide text-navy-400 uppercase">
+      {node.language}
+    </figcaption>
+  )}
+  <pre class="overflow-x-auto px-4 py-4"><code class="font-mono text-[0.8125rem] text-navy-100">{node?.code}</code></pre>
+</figure>

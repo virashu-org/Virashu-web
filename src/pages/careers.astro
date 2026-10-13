@@ -1,7 +1,13 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
-import { site, hikkari } from "../data/site";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site, hikkari as fallbackH } from '../data/site';
+import { getSiteSettings } from '../sanity/lib/site';
+import { getProduct } from '../sanity/lib/content';
+
+const settings = await getSiteSettings(Astro.cookies);
+const product = await getProduct(Astro.cookies, 'hikkari');
+const hikkariName = product?.name ?? fallbackH.name;
 
 /**
  * No named vacancies are listed here on purpose. Inventing postings on a live
@@ -10,54 +16,55 @@ import { site, hikkari } from "../data/site";
  */
 const disciplines = [
   {
-    title: "Backend engineering",
-    stack: ["Java 21", "Spring Boot", "PostgreSQL", "PostGIS", "Redis"],
-    body: "Live bidding, WhatsApp integration, KYC pipelines and the spatial matching that decides which vendors see a request.",
+    title: 'Backend engineering',
+    stack: ['Java 21', 'Spring Boot', 'PostgreSQL', 'PostGIS', 'Redis'],
+    body: 'Live bidding, WhatsApp integration, KYC pipelines and the spatial matching that decides which vendors see a request.',
   },
   {
-    title: "Applied AI and vision",
-    stack: ["ONNX", "Embeddings", "pgvector", "Vision models"],
-    body: "Making Hinglish symptom text resolve to the right repair category, and keeping customer photos private while doing it.",
+    title: 'Applied AI and vision',
+    stack: ['ONNX', 'Embeddings', 'pgvector', 'Vision models'],
+    body: 'Making Hinglish symptom text resolve to the right repair category, and keeping customer photos private while doing it.',
   },
   {
-    title: "Mobile and web engineering",
-    stack: ["Android", "Web front end", "Design systems"],
-    body: "The customer surface, where a repair quote has to be readable in seconds on a mid-range phone.",
+    title: 'Mobile and web engineering',
+    stack: ['Android', 'Web front end', 'Design systems'],
+    body: 'The customer surface, where a repair quote has to be readable in seconds on a mid-range phone.',
   },
   {
-    title: "Vendor operations",
-    stack: ["KYC", "Field onboarding", "Market ops"],
-    body: "Getting real repair shops verified and bidding, city by city. This work is on the ground, not on a dashboard.",
+    title: 'Vendor operations',
+    stack: ['KYC', 'Field onboarding', 'Market ops'],
+    body: 'Getting real repair shops verified and bidding, city by city. This work is on the ground, not on a dashboard.',
   },
   {
-    title: "Design",
-    stack: ["Interface", "Brand", "Motion"],
+    title: 'Design',
+    stack: ['Interface', 'Brand', 'Motion'],
     body: "Hikkari's product surface and the group's identity across every entity it launches.",
   },
   {
-    title: "Finance and compliance",
-    stack: ["Statutory compliance", "Company law", "Vendor payments"],
-    body: "Group-level accounting, compliance across entities, and the money movement behind vendor payouts.",
+    title: 'Finance and compliance',
+    stack: ['Statutory compliance', 'Company law', 'Vendor payments'],
+    body: 'Group-level accounting, compliance across entities, and the money movement behind vendor payouts.',
   },
 ];
 
 const principles = [
   {
-    title: "We hire for the first version",
-    body: "Early teams here build and operate what they build. If you need a large team around you before you will ship, this is the wrong place.",
+    title: 'We hire for the first version',
+    body: 'Early teams here build and operate what they build. If you need a large team around you before you will ship, this is the wrong place.',
   },
   {
-    title: "Written over spoken",
-    body: "Decisions get written down. It is how three founders and several entities stay aligned without meetings all day.",
+    title: 'Written over spoken',
+    body: 'Decisions get written down. It is how three founders and several entities stay aligned without meetings all day.',
   },
   {
-    title: "Ground truth over dashboards",
-    body: "For anything customer-facing, the team spends time where the customer is, including the shops.",
+    title: 'Ground truth over dashboards',
+    body: 'For anything customer-facing, the team spends time where the customer is, including the shops.',
   },
 ];
 ---
 
 <BaseLayout
+  settings={settings}
   title="Careers"
   description="Work at Virashu across engineering, applied AI, operations, design and finance. Open applications welcome for the disciplines the group builds in."
 >
@@ -112,7 +119,7 @@ const principles = [
         {
           principles.map((p, i) => (
             <div class="border-t border-navy-900/12 pt-6">
-              <p class="eyebrow text-gold-700">{String(i + 1).padStart(2, "0")}</p>
+              <p class="eyebrow text-gold-700">{String(i + 1).padStart(2, '0')}</p>
               <h3 class="mt-3 text-h3 text-ink">{p.title}</h3>
               <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{p.body}</p>
             </div>
@@ -128,10 +135,10 @@ const principles = [
         <div>
           <h2 class="text-h2 max-w-[24ch] text-navy-50">Send an open application.</h2>
           <p class="mt-4 max-w-[52ch] leading-relaxed text-navy-300">
-            Tell us what you would own at {hikkari.name} and what you have shipped before. Specific
+            Tell us what you would own at {hikkariName} and what you have shipped before. Specific
             beats comprehensive.
           </p>
-          <p class="mt-6 font-mono text-[0.875rem] text-gold-400">{site.legal.email}</p>
+          <p class="mt-6 font-mono text-[0.875rem] text-gold-400">{settings.legal.email}</p>
         </div>
         <a
           href="/contact"

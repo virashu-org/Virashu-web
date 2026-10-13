@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getSiteSettings } from '../../sanity/lib/site';
+import { loadQuery } from '../../sanity/lib/load-query';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+import { POSTS_QUERY } from '../../sanity/lib/queries';
+import type { POSTS_QUERY_RESULT } from '../../sanity/sanity.types';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { data: posts } = await loadQuery<POSTS_QUERY_RESULT>({
+  query: POSTS_QUERY,
+  ...getDraftModeProps(Astro.cookies),
+});
+
+const list = posts ?? [];
+---
+
+<BaseLayout
+  settings={settings}
+  title="Writing"
+  description="Notes from Virashu on building and operating businesses across software, engineering, environment, hospitality and commerce."
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Writing' }]}
+>
+  <PageHeader
+    eyebrow="Writing"
+    title="Notes from the group."
+    lede="How we build, what we have learned, and what we are still working out — written down, as we do internally."
+  />
+
+  <section class="border-t border-navy-900/10 bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      {
+        list.length === 0 ? (
+          <p class="max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">
+            There are no posts published yet. Once they are, they will appear here.
+          </p>
+        ) : (
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {list.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

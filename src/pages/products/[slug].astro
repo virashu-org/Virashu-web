@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SectionRenderer from '../../components/SectionRenderer.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { urlFor } from '../../sanity/lib/image';
+import { getSiteSettings } from '../../sanity/lib/site';
+import { getProduct } from '../../sanity/lib/content';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { slug } = Astro.params;
+
+const product = await getProduct(Astro.cookies, slug ?? '');
+if (!product) {
+  return Astro.rewrite('/404');
+}
+
+const seo = product.seo;
+const hero = product.heroImage?.asset
+  ? urlFor(product.heroImage).width(1600).height(900).fit('crop').auto('format').url()
+  : null;
+const crumbLabel = product.name ?? 'Product';
+---
+
+<BaseLayout
+  settings={settings}
+  title={seo?.metaTitle ?? product.name ?? 'Product'}
+  description={seo?.metaDescription ?? product.summary ?? settings.organizationDescription}
+  image={seo?.ogImage ?? product.heroImage}
+  noIndex={seo?.noIndex ?? false}
+  schemaType={seo?.schemaType ?? 'WebPage'}
+  structuredData={seo?.structuredData}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: crumbLabel, url: `/products/${product.slug}` },
+  ]}
+>
+  <header class="field-dark">
+    <div class="shell py-16 md:py-24">
+      <div class="text-navy-400 [&_a:hover]:text-gold-400">
+        <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: crumbLabel }]} />
+      </div>
+
+      <div class="mt-7 flex flex-wrap items-center gap-4">
+        {product.category && <p class="eyebrow text-gold-400">{product.category}</p>}
+        {product.status && <StatusBadge status={product.status} tone="light" />}
+      </div>
+
+      <h1 class="text-h1 mt-6 max-w-[22ch] text-navy-50">{product.name}</h1>
+      {product.tagline && (
+        <p class="text-lede mt-6 max-w-[58ch] leading-relaxed text-gold-300">{product.tagline}</p>
+      )}
+      {product.summary && (
+        <p class="mt-6 max-w-[58ch] leading-relaxed text-navy-200">{product.summary}</p>
+      )}
+    </div>
+  </header>
+
+  {hero && (
+    <div class="shell -mt-8 md:-mt-12">
+      <img src={hero} alt={product.heroImage?.alt ?? ''} class="w-full" style="border-radius: var(--radius-xs)" />
+    </div>
+  )}
+
+  {
+    product.problem && (
+      <section class="bg-paper">
+        <div class="shell py-16 md:py-20">
+          <p class="eyebrow text-ink-3">The problem</p>
+          <p class="mt-6 max-w-[70ch] text-lede leading-relaxed text-ink-2">{product.problem}</p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    product.mechanic?.length ? (
+      <section class="bg-paper-2">
+        <div class="shell py-16 md:py-24">
+          <p class="eyebrow text-ink-3">How it works</p>
+          <ol class="mt-12 flex flex-col">
+            {product.mechanic.map((step, index) => (
+              <li class="flex gap-5 border-t border-navy-900/12 py-6 first:border-t-0 first:pt-0">
+                <span class="eyebrow mt-1 shrink-0 text-gold-700">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h2 class="text-h3 text-ink">{step.step}</h2>
+                  <p class="mt-2 max-w-[58ch] text-[0.9375rem] leading-relaxed text-ink-2">{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    ) : null
+  }
+
+  {
+    product.features?.length ? (
+      <section class="bg-paper">
+        <div class="shell py-16 md:py-24">
+          <p class="eyebrow text-ink-3">Capabilities</p>
+          <div class="mt-12 grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-2 lg:grid-cols-3">
+            {product.features.map((feature) => (
+              <article class="flex flex-col bg-paper p-7">
+                <span class="inline-block h-2.5 w-2.5 rotate-45 bg-gold-600" aria-hidden="true" />
+                <h2 class="mt-5 font-medium text-ink">{feature.title}</h2>
+                <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{feature.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    ) : null
+  }
+
+  {
+    product.audiences?.length ? (
+      <section class="field-dark">
+        <div class="shell py-16 md:py-24">
+          <div class="grid gap-px overflow-hidden border border-navy-800 bg-navy-800 md:grid-cols-2">
+            {product.audiences.map((audience) => (
+              <div class="bg-navy-950 p-8">
+                <h2 class="text-h3 text-navy-50">{audience.name}</h2>
+                <p class="mt-4 leading-relaxed text-navy-300">{audience.body}</p>
+                <ul class="mt-6 flex flex-col gap-3">
+                  {audience.points?.map((point) => (
+                    <li class="flex items-start gap-3 text-[0.9375rem] text-navy-200">
+                      <span class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rotate-45 bg-green-500" aria-hidden="true" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    ) : null
+  }
+
+  {
+    product.stack?.length ? (
+      <section class="border-t border-navy-900/10 bg-paper">
+        <div class="shell py-16 md:py-24">
+          <p class="eyebrow text-ink-3">Engineering</p>
+          <dl class="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {product.stack.map((group) => (
+              <div class="border-t border-navy-900/12 pt-5">
+                <dt class="eyebrow text-ink-3">{group.group}</dt>
+                <dd class="mt-4 flex flex-col gap-2">
+                  {group.items?.map((item) => (
+                    <span class="font-mono text-[0.8125rem] text-ink-2">{item}</span>
+                  ))}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    ) : null
+  }
+
+  {product.sections?.length ? <SectionRenderer sections={product.sections} /> : null}
+</BaseLayout>

@@ -1,25 +1,27 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { site } from "../data/site";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteSettings } from '../sanity/lib/site';
+
+const settings = await getSiteSettings(Astro.cookies);
 
 const links = [
-  { label: "The group", href: "/group", note: "Seven chartered sectors, and which are trading." },
-  { label: "Hikkari", href: "/hikkari", note: "The blind bidding marketplace for phone repairs." },
-  { label: "About", href: "/about", note: "What the name and the corporate mark mean." },
-  { label: "Contact", href: "/contact", note: "Group enquiries, vendor onboarding and support." },
+  { label: 'The group', href: '/group', note: 'Seven chartered sectors, and which are trading.' },
+  { label: 'Hikkari', href: '/hikkari', note: 'The blind bidding marketplace for phone repairs.' },
+  { label: 'About', href: '/about', note: 'What the name and the corporate mark mean.' },
+  { label: 'Contact', href: '/contact', note: 'Group enquiries, vendor onboarding and support.' },
 ];
 ---
 
 <BaseLayout
+  settings={settings}
   title="Page not found"
   description="That page does not exist. Here is where to go instead."
+  noIndex={true}
 >
   <section class="field-dark">
     <div class="shell py-24 md:py-32">
       <p class="eyebrow text-gold-400">Error 404</p>
-      <h1 class="text-h1 mt-6 max-w-[20ch] text-navy-50">
-        That page is not here.
-      </h1>
+      <h1 class="text-h1 mt-6 max-w-[20ch] text-navy-50">That page is not here.</h1>
       <p class="text-lede mt-6 max-w-[52ch] leading-relaxed text-navy-200">
         The link may be out of date, or the page may have moved. Everything on the site is reachable
         from the four links below.
@@ -48,7 +50,7 @@ const links = [
       </ul>
 
       <p class="mt-12 text-[0.875rem] text-ink-3">
-        If you followed a link from {site.brandName} and it landed here, tell us on the
+        If you followed a link from {settings.brandName} and it landed here, tell us on the
         <a href="/contact" class="text-gold-700 underline underline-offset-4">contact page</a> and we
         will fix it.
       </p>

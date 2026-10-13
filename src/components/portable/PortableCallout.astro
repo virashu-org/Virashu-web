@@ -1,0 +1,18 @@
+---
+interface Props {
+  node: { tone?: 'note' | 'warning' | 'success'; body?: string };
+}
+
+const { node } = Astro.props;
+const toneStyles = {
+  note: 'border-navy-700 bg-navy-950/5 text-ink-2',
+  warning: 'border-gold-600 bg-gold-500/10 text-ink-2',
+  success: 'border-green-600 bg-green-500/10 text-ink-2',
+} as const;
+
+const tone = node?.tone ?? 'note';
+---
+
+<div class:list={['my-6 border-l-2 px-5 py-4 text-[0.9375rem]', toneStyles[tone]]}>
+  {node?.body}
+</div>

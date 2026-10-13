@@ -1,0 +1,55 @@
+---
+import { urlFor } from '../sanity/lib/image';
+import { formatDateShort } from '../lib/format';
+
+export type PostCardData = {
+  title: string | null;
+  slug: string | null;
+  excerpt: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  coverImage?: any;
+  publishedAt: string | null;
+  author?: { name: string | null; role: string | null } | null;
+};
+
+interface Props {
+  post: PostCardData;
+}
+
+const { post } = Astro.props;
+const image = post.coverImage?.asset
+  ? urlFor(post.coverImage).width(880).height(520).fit('crop').auto('format').url()
+  : null;
+const date = formatDateShort(post.publishedAt);
+---
+
+<article class="group flex flex-col border border-navy-900/12 bg-paper transition-colors duration-200 hover:border-gold-600/40" style="border-radius: var(--radius-xs)">
+  <a href={`/blog/${post.slug}`} class="flex h-full flex-col">
+    {image && (
+      <img
+        src={image}
+        alt={post.coverImage?.alt ?? ''}
+        loading="lazy"
+        decoding="async"
+        class="aspect-[16/10] w-full object-cover"
+      />
+    )}
+    <div class="flex flex-1 flex-col p-6">
+      {date && (
+        <time datetime={post.publishedAt ?? undefined} class="eyebrow text-ink-3">
+          {date}
+        </time>
+      )}
+      <h3 class="mt-3 text-h3 text-ink transition-colors duration-200 group-hover:text-gold-700">
+        {post.title}
+      </h3>
+      {post.excerpt && (
+        <p class="mt-3 flex-1 text-[0.9375rem] leading-relaxed text-ink-2">{post.excerpt}</p>
+      )}
+      <span class="mt-5 inline-flex items-center gap-2 text-[0.875rem] font-medium text-gold-700">
+        Read
+        <span aria-hidden="true">→</span>
+      </span>
+    </div>
+  </a>
+</article>

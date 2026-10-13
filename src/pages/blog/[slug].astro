@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PortableText from '../../components/PortableText.astro';
+import PostCard from '../../components/PostCard.astro';
+import { urlFor } from '../../sanity/lib/image';
+import { formatDate } from '../../lib/format';
+import { getSiteSettings } from '../../sanity/lib/site';
+import { loadQuery } from '../../sanity/lib/load-query';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+import { POST_QUERY } from '../../sanity/lib/queries';
+import type { POST_QUERY_RESULT } from '../../sanity/sanity.types';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { slug } = Astro.params;
+
+const { data: post } = await loadQuery<POST_QUERY_RESULT>({
+  query: POST_QUERY,
+  params: { slug },
+  ...getDraftModeProps(Astro.cookies),
+});
+
+if (!post) {
+  return Astro.rewrite('/404');
+}
+
+const seo = post.seo;
+const date = formatDate(post.publishedAt);
+const modified = formatDate(post.updatedAt);
+const cover = post.coverImage?.asset
+  ? urlFor(post.coverImage).width(1600).height(900).fit('crop').auto('format').url()
+  : null;
+const related = post.related ?? [];
+const crumbLabel = post.title ?? 'Post';
+---
+
+<BaseLayout
+  settings={settings}
+  title={seo?.metaTitle ?? post.title ?? 'Post'}
+  description={seo?.metaDescription ?? post.excerpt ?? settings.organizationDescription}
+  image={seo?.ogImage ?? post.coverImage}
+  type="article"
+  publishedTime={post.publishedAt ?? undefined}
+  modifiedTime={post.updatedAt ?? undefined}
+  authorName={post.author?.name ?? undefined}
+  noIndex={seo?.noIndex ?? false}
+  schemaType={seo?.schemaType ?? 'BlogPosting'}
+  structuredData={seo?.structuredData}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'Writing', url: '/blog' },
+    { name: crumbLabel, url: `/blog/${post.slug}` },
+  ]}
+>
+  <article>
+    <header class="field-dark">
+      <div class="shell py-16 md:py-24">
+        <div class="text-navy-400 [&_a:hover]:text-gold-400">
+          <Breadcrumbs
+            items={[
+              { name: 'Writing', href: '/blog' },
+              { name: crumbLabel },
+            ]}
+          />
+        </div>
+
+        <h1 class="text-h1 mt-7 max-w-[24ch] text-navy-50">{post.title}</h1>
+
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.875rem] text-navy-300">
+          {date && <time datetime={post.publishedAt ?? undefined}>{date}</time>}
+          {post.author?.name && <span>{post.author.name}</span>}
+          {post.categories?.length ? (
+            <span>{post.categories.map((c) => c.title).filter(Boolean).join(', ')}</span>
+          ) : null}
+        </div>
+
+        {post.excerpt && (
+          <p class="text-lede mt-8 max-w-[60ch] leading-relaxed text-navy-200">{post.excerpt}</p>
+        )}
+      </div>
+    </header>
+
+    {cover && (
+      <div class="shell -mt-8 md:-mt-12">
+        <img
+          src={cover}
+          alt={post.coverImage?.alt ?? ''}
+          class="w-full"
+          style="border-radius: var(--radius-xs)"
+        />
+      </div>
+    )}
+
+    <div class="bg-paper">
+      <div class="shell py-16 md:py-24">
+        {post.body?.length ? <PortableText value={post.body} /> : null}
+        {modified && (
+          <p class="mt-12 border-t border-navy-900/12 pt-6 text-[0.8125rem] text-ink-3">
+            Last updated {modified}
+          </p>
+        )}
+      </div>
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="border-t border-navy-900/10 bg-paper-2">
+          <div class="shell py-16 md:py-20">
+            <h2 class="eyebrow text-ink-3">More writing</h2>
+            <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((item) => (
+                <PostCard post={item} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
+import { getSiteSettings } from '../sanity/lib/site';
+import { loadQuery } from '../sanity/lib/load-query';
+import { getDraftModeProps } from '../sanity/lib/draft-mode';
+import { PAGE_QUERY } from '../sanity/lib/queries';
+import type { PAGE_QUERY_RESULT } from '../sanity/sanity.types';
+
+/**
+ * Generic CMS pages. Static routes (about, group, blog, …) take precedence over
+ * this catch-all in Astro, so only slugs with no dedicated page land here.
+ */
+const settings = await getSiteSettings(Astro.cookies);
+const raw = Astro.params.slug;
+const slug = Array.isArray(raw) ? raw.join('/') : (raw ?? '');
+
+const { data: page } = await loadQuery<PAGE_QUERY_RESULT>({
+  query: PAGE_QUERY,
+  params: { slug },
+  ...getDraftModeProps(Astro.cookies),
+});
+
+if (!page) {
+  return Astro.rewrite('/404');
+}
+
+const seo = page.seo;
+---
+
+<BaseLayout
+  settings={settings}
+  title={seo?.metaTitle ?? page.title ?? 'Page'}
+  description={seo?.metaDescription ?? page.lede ?? settings.organizationDescription}
+  image={seo?.ogImage}
+  noIndex={seo?.noIndex ?? false}
+  schemaType={seo?.schemaType ?? undefined}
+  structuredData={seo?.structuredData}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: page.title ?? 'Page', url: `/${page.slug}` },
+  ]}
+>
+  <PageHeader
+    eyebrow={page.eyebrow ?? ''}
+    title={page.title ?? ''}
+    lede={page.lede ?? undefined}
+    width="22ch"
+  />
+
+  {page.sections?.length ? <SectionRenderer sections={page.sections} /> : null}
+</BaseLayout>

@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PortableText from '../../components/PortableText.astro';
+import { urlFor } from '../../sanity/lib/image';
+import { formatDate } from '../../lib/format';
+import { getSiteSettings } from '../../sanity/lib/site';
+import { loadQuery } from '../../sanity/lib/load-query';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+import { CASE_STUDY_QUERY } from '../../sanity/lib/queries';
+import type { CASE_STUDY_QUERY_RESULT } from '../../sanity/sanity.types';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { slug } = Astro.params;
+
+const { data: caseStudy } = await loadQuery<CASE_STUDY_QUERY_RESULT>({
+  query: CASE_STUDY_QUERY,
+  params: { slug },
+  ...getDraftModeProps(Astro.cookies),
+});
+
+if (!caseStudy) {
+  return Astro.rewrite('/404');
+}
+
+const seo = caseStudy.seo;
+const date = formatDate(caseStudy.publishedAt);
+const cover = caseStudy.coverImage?.asset
+  ? urlFor(caseStudy.coverImage).width(1600).height(900).fit('crop').auto('format').url()
+  : null;
+const crumbLabel = caseStudy.title ?? 'Case study';
+---
+
+<BaseLayout
+  settings={settings}
+  title={seo?.metaTitle ?? caseStudy.title ?? 'Case study'}
+  description={seo?.metaDescription ?? caseStudy.summary ?? settings.organizationDescription}
+  image={seo?.ogImage ?? caseStudy.coverImage}
+  type="article"
+  publishedTime={caseStudy.publishedAt ?? undefined}
+  noIndex={seo?.noIndex ?? false}
+  schemaType={seo?.schemaType ?? 'Article'}
+  structuredData={seo?.structuredData}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'Case studies', url: '/case-studies' },
+    { name: crumbLabel, url: `/case-studies/${caseStudy.slug}` },
+  ]}
+>
+  <article>
+    <header class="field-dark">
+      <div class="shell py-16 md:py-24">
+        <div class="text-navy-400 [&_a:hover]:text-gold-400">
+          <Breadcrumbs items={[{ name: 'Case studies', href: '/case-studies' }, { name: crumbLabel }]} />
+        </div>
+
+        <h1 class="text-h1 mt-7 max-w-[24ch] text-navy-50">{caseStudy.title}</h1>
+
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.875rem] text-navy-300">
+          {caseStudy.client && <span>{caseStudy.client}</span>}
+          {caseStudy.industry && <span>{caseStudy.industry}</span>}
+          {date && <time datetime={caseStudy.publishedAt ?? undefined}>{date}</time>}
+        </div>
+
+        {caseStudy.summary && (
+          <p class="text-lede mt-8 max-w-[60ch] leading-relaxed text-navy-200">{caseStudy.summary}</p>
+        )}
+      </div>
+    </header>
+
+    {cover && (
+      <div class="shell -mt-8 md:-mt-12">
+        <img
+          src={cover}
+          alt={caseStudy.coverImage?.alt ?? ''}
+          class="w-full"
+          style="border-radius: var(--radius-xs)"
+        />
+      </div>
+    )}
+
+    {
+      caseStudy.metrics?.length ? (
+        <section class="border-b border-navy-900/10 bg-paper-2">
+          <div class="shell py-14">
+            <dl class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {caseStudy.metrics.map((metric) => (
+                <div class="border-t border-navy-900/12 pt-5">
+                  <dd class="font-mono text-4xl text-gold-700">{metric.value}</dd>
+                  <dt class="eyebrow mt-3 text-ink-3">{metric.label}</dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ) : null
+    }
+
+    <div class="bg-paper">
+      <div class="shell py-16 md:py-24">
+        {caseStudy.body?.length ? <PortableText value={caseStudy.body} /> : null}
+
+        {
+          caseStudy.testimonial?.quote && (
+            <figure class="mt-14 max-w-[70ch] border-l-2 border-gold-500 pl-6">
+              <blockquote class="text-[1.0625rem] leading-relaxed text-ink">
+                {caseStudy.testimonial.quote}
+              </blockquote>
+              {(caseStudy.testimonial.author || caseStudy.testimonial.role) && (
+                <figcaption class="mt-4 text-[0.875rem] text-ink-3">
+                  {caseStudy.testimonial.author}
+                  {caseStudy.testimonial.author && caseStudy.testimonial.role ? ' · ' : ''}
+                  {caseStudy.testimonial.role}
+                </figcaption>
+              )}
+            </figure>
+          )
+        }
+      </div>
+    </div>
+  </article>
+</BaseLayout>

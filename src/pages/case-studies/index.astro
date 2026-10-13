@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import { getSiteSettings } from '../../sanity/lib/site';
+import { loadQuery } from '../../sanity/lib/load-query';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+import { CASE_STUDIES_QUERY } from '../../sanity/lib/queries';
+import type { CASE_STUDIES_QUERY_RESULT } from '../../sanity/sanity.types';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { data: caseStudies } = await loadQuery<CASE_STUDIES_QUERY_RESULT>({
+  query: CASE_STUDIES_QUERY,
+  ...getDraftModeProps(Astro.cookies),
+});
+
+const list = caseStudies ?? [];
+---
+
+<BaseLayout
+  settings={settings}
+  title="Case studies"
+  description="How Virashu approaches problems across its sectors — the challenge, the approach and the measured outcome."
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Case studies' }]}
+>
+  <PageHeader
+    eyebrow="Case studies"
+    title="Work, and what it changed."
+    lede="Each case study sets out the problem we were asked to solve, what we actually did, and the numbers that moved."
+  />
+
+  <section class="border-t border-navy-900/10 bg-paper-2">
+    <div class="shell py-20 md:py-28">
+      {
+        list.length === 0 ? (
+          <p class="max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">
+            There are no case studies published yet. Once they are, they will appear here.
+          </p>
+        ) : (
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {list.map((caseStudy) => (
+              <CaseStudyCard caseStudy={caseStudy} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

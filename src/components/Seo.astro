@@ -1,0 +1,162 @@
+---
+import { stegaClean } from '@sanity/client/stega';
+import { urlFor } from '../sanity/lib/image';
+import type { ResolvedSiteSettings } from '../lib/site-settings';
+
+interface Props {
+  settings: ResolvedSiteSettings;
+  title: string;
+  description: string;
+  /** Absolute canonical URL. */
+  canonical: string;
+  image?: unknown;
+  /** og:type — "website" for pages, "article" for posts and case studies. */
+  type?: string;
+  noIndex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  authorName?: string;
+  breadcrumbs?: { name: string; url?: string }[];
+  schemaType?: string;
+  /** Extra JSON-LD merged into the page graph. */
+  structuredData?: unknown;
+}
+
+const {
+  settings,
+  title,
+  description,
+  canonical,
+  image,
+  type = 'website',
+  noIndex = false,
+  publishedTime,
+  modifiedTime,
+  authorName,
+  breadcrumbs = [],
+  schemaType,
+  structuredData,
+} = Astro.props;
+
+// Stega encoding is invisible but would corrupt metadata in draft mode.
+const cleanTitle = stegaClean(title) || title;
+const cleanDescription = stegaClean(description) || description;
+
+const brandName = settings.brandName;
+const pageTitle = cleanTitle === brandName ? cleanTitle : `${cleanTitle} | ${brandName}`;
+
+const ogSource = image ?? settings.defaultSeo?.ogImage ?? null;
+let ogImage: string | undefined;
+if (typeof ogSource === 'string') {
+  ogImage = ogSource;
+} else if (ogSource) {
+  ogImage = urlFor(ogSource).width(1200).height(630).fit('crop').auto('format').url();
+}
+
+const hideFromSearch = noIndex || settings.defaultSeo?.noIndex === true;
+const keywords = settings.defaultSeo?.keywords ?? [];
+
+const origin = new URL(canonical).origin;
+
+const resolvedSchemaType =
+  schemaType && schemaType !== 'None'
+    ? schemaType
+    : settings.defaultSeo?.schemaType && settings.defaultSeo.schemaType !== 'None'
+      ? settings.defaultSeo.schemaType
+      : 'WebPage';
+
+const organizationSchema = {
+  '@type': 'Organization',
+  name: settings.legalName,
+  alternateName: brandName,
+  url: origin,
+  description: settings.organizationDescription || cleanDescription,
+  ...(settings.logo
+    ? { logo: urlFor(settings.logo).width(512).height(512).fit('crop').auto('format').url() }
+    : {}),
+  ...(settings.social.length ? { sameAs: settings.social.map((link) => link.url) } : {}),
+};
+
+const websiteSchema = {
+  '@type': 'WebSite',
+  name: brandName,
+  url: origin,
+};
+
+const pageSchema =
+  resolvedSchemaType === 'None'
+    ? null
+    : {
+        '@type': resolvedSchemaType,
+        name: cleanTitle,
+        headline: cleanTitle,
+        description: cleanDescription,
+        url: canonical,
+        ...(ogImage ? { image: ogImage } : {}),
+        ...(publishedTime ? { datePublished: publishedTime } : {}),
+        ...(modifiedTime ? { dateModified: modifiedTime } : {}),
+        ...(authorName ? { author: { '@type': 'Person', name: authorName } } : {}),
+      };
+
+const breadcrumbSchema = breadcrumbs.length
+  ? {
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        item: crumb.url
+          ? crumb.url.startsWith('http')
+            ? crumb.url
+            : new URL(crumb.url, origin).href
+          : undefined,
+      })),
+    }
+  : null;
+
+// Custom JSON-LD from site settings and/or the page, merged as extra graph nodes.
+const customNodes: unknown[] = [];
+for (const raw of [settings.defaultSeo?.structuredData, structuredData]) {
+  if (typeof raw === 'string' && raw.trim()) {
+    try {
+      const parsed = JSON.parse(raw);
+      customNodes.push(...(Array.isArray(parsed) ? parsed : [parsed]));
+    } catch {
+      // Ignore malformed JSON rather than breaking the page.
+    }
+  } else if (raw && typeof raw === 'object') {
+    customNodes.push(raw);
+  }
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [organizationSchema, websiteSchema, pageSchema, breadcrumbSchema, ...customNodes].filter(
+    Boolean,
+  ),
+};
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={cleanDescription} />
+<link rel="canonical" href={canonical} />
+{hideFromSearch && <meta name="robots" content="noindex, nofollow" />}
+{keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={brandName} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={cleanDescription} />
+<meta property="og:url" content={canonical} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+{ogImage && <meta property="og:image:width" content="1200" />}
+{ogImage && <meta property="og:image:height" content="630" />}
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{authorName && <meta property="article:author" content={authorName} />}
+
+<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}
+<meta name="theme-color" content="#0E1526" />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

@@ -1,0 +1,43 @@
+---
+import { PortableText as PortableTextRenderer } from 'astro-portabletext';
+import PortableImage from './portable/PortableImage.astro';
+import PortableLink from './portable/PortableLink.astro';
+import PortableCallout from './portable/PortableCallout.astro';
+import PortableCodeBlock from './portable/PortableCodeBlock.astro';
+
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any[];
+}
+
+const { value } = Astro.props;
+
+const components = {
+  type: {
+    image: PortableImage,
+    callout: PortableCallout,
+    codeBlock: PortableCodeBlock,
+  },
+  mark: {
+    link: PortableLink,
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any;
+---
+
+<div
+  class="max-w-[70ch] text-[0.9375rem] leading-[1.75] text-ink-2
+    [&_a]:text-gold-700 [&_a]:underline [&_a]:underline-offset-4
+    [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:text-h3 [&_h2]:font-semibold [&_h2]:text-ink
+    [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:text-h3 [&_h3]:font-medium [&_h3]:text-ink
+    [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:font-medium [&_h4]:text-ink
+    [&_li]:mb-2 [&_li]:pl-1
+    [&_p]:mb-4 [&_strong]:font-medium [&_strong]:text-ink
+    [&_em]:italic
+    [&_code]:bg-navy-900/8 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em]
+    [&_blockquote]:my-6 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-5 [&_blockquote]:text-ink [&_blockquote]:italic
+    [&_ul]:mb-5 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:pl-5
+    [&_ol]:mb-5 [&_ol]:list-outside [&_ol]:list-decimal [&_ol]:pl-5"
+>
+  <PortableTextRenderer value={value} components={components} />
+</div>

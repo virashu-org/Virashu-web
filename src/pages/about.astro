@@ -1,11 +1,15 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
-import Logo from "../components/Logo.astro";
-import { site, markMeanings } from "../data/site";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Logo from '../components/Logo.astro';
+import { getSiteSettings } from '../sanity/lib/site';
+
+const settings = await getSiteSettings(Astro.cookies);
+const { founders, markMeanings } = settings;
 ---
 
 <BaseLayout
+  settings={settings}
   title="About"
   description="Virashu is named after its three founders. Its corporate mark encodes vastness, precious value, auspicious growth and unified leadership."
 >
@@ -19,7 +23,7 @@ import { site, markMeanings } from "../data/site";
     <div class="shell py-20 md:py-28">
       <div class="grid gap-px overflow-hidden border border-navy-900/12 bg-navy-900/12 md:grid-cols-3">
         {
-          site.founders.map((f) => (
+          founders.map((f) => (
             <div class="bg-paper p-8">
               <p class="font-mono text-5xl font-medium tracking-tight text-gold-700">
                 {f.derivation}
@@ -75,7 +79,7 @@ import { site, markMeanings } from "../data/site";
               markMeanings.map((m, i) => (
                 <div class="flex gap-6 border-t border-navy-900/12 py-7 first:border-t-0 first:pt-0">
                   <span class="eyebrow mt-1.5 shrink-0 text-gold-700">
-                    {String(i + 1).padStart(2, "0")}
+                    {String(i + 1).padStart(2, '0')}
                   </span>
                   <div>
                     <h3 class="text-h3 text-ink">{m.title}</h3>
